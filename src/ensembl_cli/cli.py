@@ -157,13 +157,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--timeout", type=float, default=30.0, help="HTTP timeout in seconds.")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
 
-    subparsers = parser.add_subparsers(dest="command", required=True)
+    subparsers = parser.add_subparsers(dest="command")
 
     explain = subparsers.add_parser("explain", help="Explain the CLI model and common workflows.")
     explain.set_defaults(handler=_handle_explain)
 
     api = subparsers.add_parser("api", help="Inspect or call the documented Ensembl REST operations.")
-    api_subparsers = api.add_subparsers(dest="api_command", required=True)
+    api_subparsers = api.add_subparsers(dest="api_command")
 
     operations = api_subparsers.add_parser("operations", help="List all documented operations.")
     operations.add_argument("--group", help="Filter by group name.")
@@ -177,7 +177,7 @@ def build_parser() -> argparse.ArgumentParser:
     show.set_defaults(handler=_handle_show)
 
     call = api_subparsers.add_parser("call", help="Invoke a documented operation.")
-    call_subparsers = call.add_subparsers(dest="operation_name", required=True)
+    call_subparsers = call.add_subparsers(dest="operation_name")
     for operation in load_operations():
         _build_operation_parser(call_subparsers, operation)
 
@@ -375,6 +375,28 @@ def _handle_raw(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    if args.command is None:
+        parser.print_help()
+        return 0
+    if args.command == "api" and args.api_command is None:
+        next(
+            action
+            for action in parser._actions
+            if isinstance(action, argparse._SubParsersAction)
+        ).choices["api"].print_help()
+        return 0
+    if args.command == "api" and args.api_command == "call" and args.operation_name is None:
+        api_parser = next(
+            action
+            for action in parser._actions
+            if isinstance(action, argparse._SubParsersAction)
+        ).choices["api"]
+        next(
+            action
+            for action in api_parser._actions
+            if isinstance(action, argparse._SubParsersAction)
+        ).choices["call"].print_help()
+        return 0
     try:
         return args.handler(args)
     except (EnsemblClientError, ValueError, json.JSONDecodeError) as exc:
