@@ -1,5 +1,5 @@
 pkgname=ensembl-cli
-pkgver=0.1.2
+pkgver=0.1.3
 pkgrel=1
 pkgdesc='Self-documenting command line client for the Ensembl REST API'
 arch=('any')
@@ -8,7 +8,7 @@ license=('MIT')
 depends=('python')
 makedepends=('python-build' 'python-installer' 'python-wheel')
 source=("$pkgname-$pkgver.tar.gz::$url/releases/download/v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('8a26fd1fe57f92925621896c340ad86ed47a50bb2d2ff9466661d4f6c173546e')
+sha256sums=('4e6728f1fdbf06cceee72d045371586355424bc0c180e57292db13775df17414')
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"

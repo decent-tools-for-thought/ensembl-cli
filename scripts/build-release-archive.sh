@@ -41,15 +41,15 @@ PY
 
 tar \
   --create \
-  --gzip \
-  --file "${outdir}/${archive_name}" \
+  --file - \
   --directory . \
   --owner=0 \
   --group=0 \
   --numeric-owner \
   --mtime='UTC 1970-01-01' \
   --transform "s,^,${prefix}," \
-  --files-from "${file_list}"
+  --files-from "${file_list}" \
+  | gzip -n > "${outdir}/${archive_name}"
 
 sha256sum "${outdir}/${archive_name}" > "${outdir}/SHA256SUMS"
 
