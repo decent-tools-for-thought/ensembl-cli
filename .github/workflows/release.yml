@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  build-and-verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,6 +33,58 @@ jobs:
 
       - name: Build release archive
         run: ./scripts/build-release-archive.sh dist
+
+      - name: Verify wheel artifact library import
+        run: |
+          python -m venv .venv-wheel-import
+          . .venv-wheel-import/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install "$(ls dist/*.whl)"
+          python -c "import ensembl_cli"
+
+      - name: Verify wheel artifact console script
+        run: |
+          python -m venv .venv-wheel-cli
+          . .venv-wheel-cli/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install "$(ls dist/*.whl)"
+          ensembl --help
+
+      - name: Verify sdist artifact library import
+        run: |
+          SDIST="$(python -c 'from pathlib import Path; candidates = sorted(Path("dist").glob("ensembl_cli-*.tar.gz")); assert len(candidates) == 1, candidates; print(candidates[0])')"
+          python -m venv .venv-sdist-import
+          . .venv-sdist-import/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install "${SDIST}"
+          python -c "import ensembl_cli"
+
+      - name: Verify sdist artifact console script
+        run: |
+          SDIST="$(python -c 'from pathlib import Path; candidates = sorted(Path("dist").glob("ensembl_cli-*.tar.gz")); assert len(candidates) == 1, candidates; print(candidates[0])')"
+          python -m venv .venv-sdist-cli
+          . .venv-sdist-cli/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install "${SDIST}"
+          ensembl --help
+
+      - name: Upload verified release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts
+          path: dist/
+          if-no-files-found: error
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build-and-verify
+
+    steps:
+      - name: Download verified release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts
+          path: dist
 
       - name: Create or update GitHub release
         env:
