@@ -36,9 +36,21 @@ PY
       - name: Build release archive
         run: ./scripts/build-release-archive.sh dist
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            dist/ensembl-cli-*.tar.gz
-            dist/SHA256SUMS
+      - name: Create or update GitHub release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release upload "${GITHUB_REF_NAME}" \
+              dist/ensembl-cli-*.tar.gz \
+              dist/SHA256SUMS \
+              --clobber \
+              --repo "${GITHUB_REPOSITORY}"
+          else
+            gh release create "${GITHUB_REF_NAME}" \
+              dist/ensembl-cli-*.tar.gz \
+              dist/SHA256SUMS \
+              --repo "${GITHUB_REPOSITORY}" \
+              --title "${GITHUB_REF_NAME}" \
+              --generate-notes
+          fi

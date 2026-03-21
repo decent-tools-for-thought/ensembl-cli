@@ -7,6 +7,7 @@ import urllib.parse
 from collections import defaultdict
 from typing import Any
 
+from . import __version__
 from .client import DEFAULT_BASE_URL, EnsemblClient, EnsemblClientError
 from .metadata import Operation, Parameter, get_operation, load_metadata, load_operations
 
@@ -154,7 +155,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="API base URL.")
     parser.add_argument("--timeout", type=float, default=30.0, help="HTTP timeout in seconds.")
-    parser.add_argument("--version", action="version", version=f"%(prog)s {metadata['metadata_version']}")
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
 
     subparsers = parser.add_subparsers(dest="command", required=True)
 
