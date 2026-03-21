@@ -34,7 +34,7 @@ def _format_param_help(parameter: Parameter) -> str:
         bits.append(f"default: {parameter.default}")
     if parameter.examples:
         bits.append(f"examples: {', '.join(parameter.examples)}")
-    return " | ".join(bits)
+    return " | ".join(bits).replace("%", "%%")
 
 
 def _coerce_field_value(raw: str) -> Any:

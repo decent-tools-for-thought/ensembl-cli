@@ -6,22 +6,19 @@ The command surface is generated from the official Ensembl REST documentation sn
 
 ## Development
 
+Set up a repo-local environment with `uv`:
+
+```bash
+uv sync
+uv run ensemble --help
+```
+
 Run directly from the checkout:
 
 ```bash
-PYTHONPATH=src python -m ensembl_cli.cli explain
-PYTHONPATH=src python -m ensembl_cli.cli api operations
+uv run python -m ensembl_cli.cli explain
+uv run python -m ensembl_cli.cli api operations
 ```
-
-## Arch package
-
-This repository ships a `PKGBUILD` that installs from GitHub release artifacts:
-
-```bash
-makepkg -si
-```
-
-Release tarballs are published by GitHub Actions and consumed by the package definition in [PKGBUILD](/home/morty/Software/ensemble-cli/PKGBUILD).
 
 ## Usage
 
@@ -39,7 +36,7 @@ Refresh the bundled Ensembl docs snapshot:
 
 ```bash
 ./scripts/prefetch_docs.sh .cache/ensembl-docs
-python scripts/update_metadata.py --source-dir .cache/ensembl-docs
+uv run python scripts/update_metadata.py --source-dir .cache/ensembl-docs
 ```
 
 ## Releases
@@ -47,6 +44,8 @@ python scripts/update_metadata.py --source-dir .cache/ensembl-docs
 Tagging `v<version>` triggers GitHub Actions to publish:
 
 - `ensembl-cli-<version>.tar.gz`
+- `ensembl_cli-<version>.tar.gz`
+- `ensembl_cli-<version>-py3-none-any.whl`
 - `SHA256SUMS`
 
 You can build a release-style archive locally with:
