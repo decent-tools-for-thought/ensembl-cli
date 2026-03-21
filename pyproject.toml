@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ensembl-cli"
+version = "0.1.0"
+description = "Self-documenting CLI for the Ensembl REST API"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+  {name = "Codex"}
+]
+dependencies = []
+
+[project.scripts]
+ensemble = "ensembl_cli.cli:main"
+ensembl = "ensembl_cli.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ensembl_cli = ["data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

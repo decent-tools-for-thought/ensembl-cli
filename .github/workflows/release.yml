@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Validate tag matches project version
+        run: |
+          version="$(python - <<'PY'
+from pathlib import Path
+import tomllib
+
+data = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+print(data["project"]["version"])
+PY
+)"
+          test "${GITHUB_REF_NAME}" = "v${version}"
+
+      - name: Run unit tests
+        run: PYTHONPATH=src python -m unittest discover -s tests -v
+
+      - name: Build release archive
+        run: ./scripts/build-release-archive.sh dist
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/ensembl-cli-*.tar.gz
+            dist/SHA256SUMS

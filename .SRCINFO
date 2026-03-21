@@ -1,0 +1,15 @@
+pkgbase = ensembl-cli
+	pkgdesc = Self-documenting command line client for the Ensembl REST API
+	pkgver = 0.1.0
+	pkgrel = 1
+	url = https://github.com/decent-tools-for-thought/ensembl-cli
+	arch = any
+	license = MIT
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	source = ensembl-cli-0.1.0.tar.gz::https://github.com/decent-tools-for-thought/ensembl-cli/releases/download/v0.1.0/ensembl-cli-0.1.0.tar.gz
+	sha256sums = cea1e1ab94af33ac41776c4f9755ff995ffe5a99e27c8c02ec6660096337923c
+
+pkgname = ensembl-cli
