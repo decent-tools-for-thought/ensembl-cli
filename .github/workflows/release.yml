@@ -20,14 +20,7 @@ jobs:
 
       - name: Validate tag matches project version
         run: |
-          version="$(python - <<'PY'
-from pathlib import Path
-import tomllib
-
-data = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
-print(data["project"]["version"])
-PY
-)"
+          version="$(python -c 'from pathlib import Path; import tomllib; print(tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]["version"])')"
           test "${GITHUB_REF_NAME}" = "v${version}"
 
       - name: Run unit tests
