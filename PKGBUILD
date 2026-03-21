@@ -12,11 +12,11 @@ sha256sums=('bb9aec95e32caa7f8bc85c722812919376542e7f53f31d50f6a0df7ee38bdb61')
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"
-  python -m build --wheel --no-isolation
+  /usr/bin/python -m build --wheel --no-isolation
 }
 
 package() {
   cd "$srcdir/$pkgname-$pkgver"
-  python -m installer --destdir="$pkgdir" dist/*.whl
+  /usr/bin/python -m installer --destdir="$pkgdir" dist/*.whl
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
