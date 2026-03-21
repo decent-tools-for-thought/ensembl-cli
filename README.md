@@ -44,12 +44,12 @@ python scripts/update_metadata.py --source-dir .cache/ensembl-docs
 
 ## Releases
 
-Tagging `v<version>` triggers GitHub Actions to build:
+Tagging `v<version>` triggers GitHub Actions to publish:
 
 - `ensembl-cli-<version>.tar.gz`
 - `SHA256SUMS`
 
-The release archive is deterministic and can be reproduced locally with:
+You can build a release-style archive locally with:
 
 ```bash
 ./scripts/build-release-archive.sh dist
