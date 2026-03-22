@@ -4,6 +4,44 @@
 
 The command surface is generated from the official Ensembl REST documentation snapshot bundled with this repository, so every documented operation is available via the CLI.
 
+## Install
+
+Install from a checkout:
+
+```bash
+python -m pip install .
+ensembl --help
+```
+
+For isolated CLI installs, `pipx install .` also works.
+
+The package publishes both `ensembl` and `ensemble` console scripts. The examples below use `ensembl`, but both names invoke the same CLI.
+
+## Config
+
+The CLI talks to `https://rest.ensembl.org` by default. Override the endpoint or timeout on any command:
+
+```bash
+ensembl --base-url https://rest.ensembl.org --timeout 10 api operations
+```
+
+Inspect the generated command model before making live requests:
+
+```bash
+ensembl explain
+ensembl api show lookup
+```
+
+## Smoke Usage
+
+Basic discovery and smoke checks:
+
+```bash
+ensembl api operations --group Lookup
+ensembl api show lookup
+ensembl raw /info/ping
+```
+
 ## Development
 
 Set up a repo-local environment with `uv`:
@@ -23,11 +61,11 @@ uv run python -m ensembl_cli.cli api operations
 ## Usage
 
 ```bash
-ensemble api operations
-ensemble api show lookup
-ensemble api call lookup ENSG00000157764
-ensemble api call lookup_post --field 'ids=["ENSG00000157764","ENSG00000248378"]'
-ensemble raw /info/ping
+ensembl api operations
+ensembl api show lookup
+ensembl api call lookup ENSG00000157764
+ensembl api call lookup_post --field 'ids=["ENSG00000157764","ENSG00000248378"]'
+ensembl raw /info/ping
 ```
 
 ## Metadata refresh

@@ -5,11 +5,11 @@ import json
 import sys
 import urllib.parse
 from collections import defaultdict
-from typing import Any
+from typing import Any, Callable, cast
 
 from . import __version__
 from .client import DEFAULT_BASE_URL, EnsemblClient, EnsemblClientError
-from .metadata import Operation, Parameter, get_operation, load_metadata, load_operations
+from .metadata import Operation, Parameter, get_operation, load_operations
 
 
 def _param_flag(name: str) -> str:
@@ -111,7 +111,9 @@ def _build_common_call_arguments(parser: argparse.ArgumentParser) -> None:
     )
 
 
-def _build_operation_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser], operation: Operation) -> None:
+def _build_operation_parser(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser], operation: Operation
+) -> None:
     parser = subparsers.add_parser(
         operation.cli_name,
         aliases=[operation.cli_alias] if operation.cli_alias != operation.cli_name else [],
@@ -149,8 +151,8 @@ def _build_operation_parser(subparsers: argparse._SubParsersAction[argparse.Argu
 
 
 def build_parser() -> argparse.ArgumentParser:
-    metadata = load_metadata()
     parser = argparse.ArgumentParser(
+        prog="ensembl",
         description="Self-documenting command line client for the Ensembl REST API.",
     )
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="API base URL.")
@@ -162,7 +164,9 @@ def build_parser() -> argparse.ArgumentParser:
     explain = subparsers.add_parser("explain", help="Explain the CLI model and common workflows.")
     explain.set_defaults(handler=_handle_explain)
 
-    api = subparsers.add_parser("api", help="Inspect or call the documented Ensembl REST operations.")
+    api = subparsers.add_parser(
+        "api", help="Inspect or call the documented Ensembl REST operations."
+    )
     api_subparsers = api.add_subparsers(dest="api_command")
 
     operations = api_subparsers.add_parser("operations", help="List all documented operations.")
@@ -171,7 +175,9 @@ def build_parser() -> argparse.ArgumentParser:
     operations.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
     operations.set_defaults(handler=_handle_operations)
 
-    show = api_subparsers.add_parser("show", help="Show one operation with parameters and message schema.")
+    show = api_subparsers.add_parser(
+        "show", help="Show one operation with parameters and message schema."
+    )
     show.add_argument("operation")
     show.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
     show.set_defaults(handler=_handle_show)
@@ -209,7 +215,7 @@ def _handle_explain(args: argparse.Namespace) -> int:
         "  ensembl api operations",
         "  ensembl api show lookup",
         "  ensembl api call lookup ENSG00000157764",
-        "  ensembl api call lookup_post --field ids='[\"ENSG00000157764\",\"ENSG00000248378\"]'",
+        '  ensembl api call lookup_post --field ids=\'["ENSG00000157764","ENSG00000248378"]\'',
         "  ensembl raw /lookup/id/ENSG00000157764",
         "",
         "Every documented operation is available under `ensembl api call <operation-id>`.",
@@ -380,16 +386,12 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "api" and args.api_command is None:
         next(
-            action
-            for action in parser._actions
-            if isinstance(action, argparse._SubParsersAction)
+            action for action in parser._actions if isinstance(action, argparse._SubParsersAction)
         ).choices["api"].print_help()
         return 0
     if args.command == "api" and args.api_command == "call" and args.operation_name is None:
         api_parser = next(
-            action
-            for action in parser._actions
-            if isinstance(action, argparse._SubParsersAction)
+            action for action in parser._actions if isinstance(action, argparse._SubParsersAction)
         ).choices["api"]
         next(
             action
@@ -398,7 +400,8 @@ def main(argv: list[str] | None = None) -> int:
         ).choices["call"].print_help()
         return 0
     try:
-        return args.handler(args)
+        handler = cast(Callable[[argparse.Namespace], int], getattr(args, "handler"))
+        return handler(args)
     except (EnsemblClientError, ValueError, json.JSONDecodeError) as exc:
         print(str(exc), file=sys.stderr)
         return 1

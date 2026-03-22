@@ -72,7 +72,9 @@ class Operation:
             description=payload.get("description", ""),
             path_params=tuple(payload.get("path_params", [])),
             params=tuple(Parameter.from_dict(item) for item in payload.get("params", [])),
-            message_formats=tuple(MessageFormat.from_dict(item) for item in payload.get("message_formats", [])),
+            message_formats=tuple(
+                MessageFormat.from_dict(item) for item in payload.get("message_formats", [])
+            ),
         )
 
 

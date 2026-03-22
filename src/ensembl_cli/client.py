@@ -7,7 +7,6 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Any
 
-
 DEFAULT_BASE_URL = "https://rest.ensembl.org"
 
 
@@ -59,7 +58,11 @@ class EnsemblClient:
         if accept and not any(key == "content-type" for key, _ in query_params):
             query_params.append(("content-type", accept))
 
-        path_value = path if path.startswith("http://") or path.startswith("https://") else f"{self.base_url}/{path.lstrip('/')}"
+        path_value = (
+            path
+            if path.startswith("http://") or path.startswith("https://")
+            else f"{self.base_url}/{path.lstrip('/')}"
+        )
         if query_params:
             path_value = f"{path_value}?{urllib.parse.urlencode(query_params, doseq=True)}"
 

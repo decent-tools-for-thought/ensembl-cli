@@ -9,7 +9,6 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-
 INDEX_URL = "https://rest.ensembl.org/documentation/"
 OUTPUT_PATH = Path("src/ensembl_cli/data/operations.json")
 
@@ -70,7 +69,9 @@ def normalize_path_from_example(path: str, example_path: str | None) -> str:
     return "/".join(normalized)
 
 
-def parse_parameter_table(section: str, required: bool, path_params: set[str]) -> list[dict[str, Any]]:
+def parse_parameter_table(
+    section: str, required: bool, path_params: set[str]
+) -> list[dict[str, Any]]:
     if "No required parameters" in section:
         return []
     table_match = re.search(r"<table[^>]*>(.*?)</table>", section, re.S)
@@ -100,7 +101,9 @@ def parse_parameter_table(section: str, required: bool, path_params: set[str]) -
 
 
 def parse_message_formats(page: str) -> list[dict[str, str]]:
-    message_match = re.search(r"<h2>Message</h2>(.*?)(?:<h2>Example Requests</h2>|</div>\s*</div>)", page, re.S)
+    message_match = re.search(
+        r"<h2>Message</h2>(.*?)(?:<h2>Example Requests</h2>|</div>\s*</div>)", page, re.S
+    )
     if not message_match:
         return []
     table_match = re.search(r"<table[^>]*>(.*?)</table>", message_match.group(1), re.S)
@@ -130,7 +133,9 @@ def parse_example_request_path(page: str) -> str | None:
     return href.split("?", 1)[0]
 
 
-def align_path_parameters(params: list[dict[str, Any]], path_params: list[str]) -> list[dict[str, Any]]:
+def align_path_parameters(
+    params: list[dict[str, Any]], path_params: list[str]
+) -> list[dict[str, Any]]:
     by_name = {item["name"]: index for index, item in enumerate(params)}
     required_indices = [index for index, item in enumerate(params) if item["required"]]
     required_index = 0
@@ -142,7 +147,10 @@ def align_path_parameters(params: list[dict[str, Any]], path_params: list[str]) 
         if source_index is not None:
             item = dict(params[source_index])
         else:
-            while required_index < len(required_indices) and required_indices[required_index] in consumed_indices:
+            while (
+                required_index < len(required_indices)
+                and required_indices[required_index] in consumed_indices
+            ):
                 required_index += 1
             if required_index < len(required_indices):
                 source_index = required_indices[required_index]
@@ -178,7 +186,9 @@ def align_path_parameters(params: list[dict[str, Any]], path_params: list[str]) 
 def parse_operation_page(page: str, fallback: dict[str, Any]) -> dict[str, Any]:
     title_match = re.search(r'<h1 id="title">(GET|POST)\s+([^<]+)</h1>', page)
     description_match = re.search(r'<div class="lead">\s*<p>(.*?)</p>', page, re.S)
-    footer_match = re.search(r"Ensembl REST API \(Version ([^)]+)\).*?([A-Z][a-z]{2} \d{4})", page, re.S)
+    footer_match = re.search(
+        r"Ensembl REST API \(Version ([^)]+)\).*?([A-Z][a-z]{2} \d{4})", page, re.S
+    )
     method = fallback["method"]
     path = fallback["path"]
     if title_match:
@@ -188,18 +198,34 @@ def parse_operation_page(page: str, fallback: dict[str, Any]) -> dict[str, Any]:
     path = normalize_path_from_example(path, example_path)
     path_params = extract_path_params(path)
     path_param_set = set(path_params)
-    required_match = re.search(r"<h3>Required</h3>(.*?)(?:<h3>Optional</h3>|<h2>Message</h2>|<h2>Example Requests</h2>)", page, re.S)
-    optional_match = re.search(r"<h3>Optional</h3>(.*?)(?:<h2>Message</h2>|<h2>Example Requests</h2>)", page, re.S)
+    required_match = re.search(
+        r"<h3>Required</h3>(.*?)(?:<h3>Optional</h3>|<h2>Message</h2>|<h2>Example Requests</h2>)",
+        page,
+        re.S,
+    )
+    optional_match = re.search(
+        r"<h3>Optional</h3>(.*?)(?:<h2>Message</h2>|<h2>Example Requests</h2>)", page, re.S
+    )
     params = []
     if required_match:
-        params.extend(parse_parameter_table(required_match.group(1), required=True, path_params=path_param_set))
+        params.extend(
+            parse_parameter_table(
+                required_match.group(1), required=True, path_params=path_param_set
+            )
+        )
     if optional_match:
-        params.extend(parse_parameter_table(optional_match.group(1), required=False, path_params=path_param_set))
+        params.extend(
+            parse_parameter_table(
+                optional_match.group(1), required=False, path_params=path_param_set
+            )
+        )
     params = align_path_parameters(params, path_params)
     return {
         "method": method,
         "path": path,
-        "description": clean_text(description_match.group(1)) if description_match else fallback["description"],
+        "description": clean_text(description_match.group(1))
+        if description_match
+        else fallback["description"],
         "doc_version": footer_match.group(1).strip() if footer_match else None,
         "doc_release": footer_match.group(2).strip() if footer_match else None,
         "path_params": extract_path_params(path),
@@ -209,7 +235,9 @@ def parse_operation_page(page: str, fallback: dict[str, Any]) -> dict[str, Any]:
 
 
 def parse_index_page(index_html: str) -> tuple[list[dict[str, Any]], dict[str, str]]:
-    footer_match = re.search(r"Ensembl REST API \(Version ([^)]+)\).*?([A-Z][a-z]{2} \d{4})", index_html, re.S)
+    footer_match = re.search(
+        r"Ensembl REST API \(Version ([^)]+)\).*?([A-Z][a-z]{2} \d{4})", index_html, re.S
+    )
     group_blocks = re.findall(
         r'<tr><td><h3 id="[^"]+">\s*(.*?)</h3></td><td></td></tr>.*?<tbody>(.*?)</tbody>',
         index_html,
@@ -218,7 +246,11 @@ def parse_index_page(index_html: str) -> tuple[list[dict[str, Any]], dict[str, s
     operations: list[dict[str, Any]] = []
     for group_name, body in group_blocks:
         group = clean_text(group_name)
-        rows = re.findall(r'<tr><td><a href="([^"]+)">(GET|POST)\s+([^<]+)</a>\s*</td><td>(.*?)</td></tr>', body, re.S)
+        rows = re.findall(
+            r'<tr><td><a href="([^"]+)">(GET|POST)\s+([^<]+)</a>\s*</td><td>(.*?)</td></tr>',
+            body,
+            re.S,
+        )
         for doc_url, method, path, description in rows:
             operation_id = doc_url.rstrip("/").split("/")[-1]
             cli_alias = operation_id.replace("_", "-")
@@ -253,7 +285,11 @@ def load_source_html(source_dir: Path | None) -> tuple[str, dict[str, str]]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Refresh bundled Ensembl REST operation metadata.")
-    parser.add_argument("--source-dir", type=Path, help="Read prefetched HTML from this directory instead of the network.")
+    parser.add_argument(
+        "--source-dir",
+        type=Path,
+        help="Read prefetched HTML from this directory instead of the network.",
+    )
     parser.add_argument("--output", type=Path, default=OUTPUT_PATH, help="Output JSON path.")
     args = parser.parse_args()
 
