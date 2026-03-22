@@ -1,93 +1,69 @@
 # ensembl-cli
 
-`ensemble` / `ensembl` is a self-documenting command-line client for the Ensembl REST API.
+[![Release](https://img.shields.io/github/v/release/decent-tools-for-thought/ensembl-cli?sort=semver)](https://github.com/decent-tools-for-thought/ensembl-cli/releases)
+![Python](https://img.shields.io/badge/python-3.11%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-The command surface is generated from the official Ensembl REST documentation snapshot bundled with this repository, so every documented operation is available via the CLI.
+Self-documenting command-line client for the Ensembl REST API.
+
+> [!IMPORTANT]
+> This codebase is largely AI-generated. It is useful to me, I hope it might be useful to others, and issues and contributions are welcome.
+
+## Why This Exists
+
+- Expose the Ensembl REST surface as a discoverable CLI.
+- Generate command help from a bundled documentation snapshot.
+- Make ad hoc genomics API work easier from the shell.
 
 ## Install
-
-Install from a checkout:
 
 ```bash
 python -m pip install .
 ensembl --help
 ```
 
-For isolated CLI installs, `pipx install .` also works.
+The package publishes both `ensembl` and `ensemble`; both invoke the same CLI.
 
-The package publishes both `ensembl` and `ensemble` console scripts. The examples below use `ensembl`, but both names invoke the same CLI.
-
-## Config
-
-The CLI talks to `https://rest.ensembl.org` by default. Override the endpoint or timeout on any command:
-
-```bash
-ensembl --base-url https://rest.ensembl.org --timeout 10 api operations
-```
-
-Inspect the generated command model before making live requests:
-
-```bash
-ensembl explain
-ensembl api show lookup
-```
-
-## Smoke Usage
-
-Basic discovery and smoke checks:
-
-```bash
-ensembl api operations --group Lookup
-ensembl api show lookup
-ensembl raw /info/ping
-```
-
-## Development
-
-Set up a repo-local environment with `uv`:
+For local development:
 
 ```bash
 uv sync
-uv run ensemble --help
+uv run ensembl --help
 ```
 
-Run directly from the checkout:
+## Quick Start
+
+Discover operations:
 
 ```bash
-uv run python -m ensembl_cli.cli explain
-uv run python -m ensembl_cli.cli api operations
-```
-
-## Usage
-
-```bash
-ensembl api operations
+ensembl explain
+ensembl api operations --group Lookup
 ensembl api show lookup
+```
+
+Make calls:
+
+```bash
 ensembl api call lookup ENSG00000157764
 ensembl api call lookup_post --field 'ids=["ENSG00000157764","ENSG00000248378"]'
 ensembl raw /info/ping
 ```
 
-## Metadata refresh
-
-Refresh the bundled Ensembl docs snapshot:
+## Metadata Refresh
 
 ```bash
 ./scripts/prefetch_docs.sh .cache/ensembl-docs
 uv run python scripts/update_metadata.py --source-dir .cache/ensembl-docs
 ```
 
-## Releases
-
-Tagging `v<version>` triggers GitHub Actions to publish:
-
-- `ensembl-cli-<version>.tar.gz`
-- `ensembl_cli-<version>.tar.gz`
-- `ensembl_cli-<version>-py3-none-any.whl`
-- `SHA256SUMS`
-
-You can build a release-style archive locally with:
+## Development
 
 ```bash
-./scripts/build-release-archive.sh dist
+uv run ruff check src tests
+uv run mypy
+uv run pytest
 ```
+
+## Credits
+
+This client depends on the Ensembl REST API and the Ensembl documentation set. Credit goes to the Ensembl project for the API design, data resources, and upstream docs this tool builds on.
