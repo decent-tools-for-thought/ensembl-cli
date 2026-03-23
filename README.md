@@ -14,11 +14,11 @@ Self-documenting command-line client for inspecting and calling the bundled Ense
 > This codebase is entirely AI-generated. It is useful to me, I hope it might be useful to others, and issues and contributions are welcome.
 
 ## Map
+$$\color{#0EA5E9}Tool \space \color{#14B8A6}Map$$
 - [Install](#install)
 - [Functionality](#functionality)
 - [Quick Start](#quick-start)
 - [Metadata Refresh](#metadata-refresh)
-- [Development](#development)
 - [Credits](#credits)
 
 ## Install
@@ -30,14 +30,8 @@ ensembl --help
 
 The package publishes both `ensembl` and `ensemble`; both invoke the same CLI.
 
-For local development:
-
-```bash
-uv sync
-uv run ensembl --help
-```
-
 ## Functionality
+$$\color{#0EA5E9}Core \space \color{#14B8A6}Features$$
 
 ### CLI Discovery
 - `ensembl explain`: print the CLI mental model and the recommended discovery workflow.
@@ -59,6 +53,7 @@ uv run ensembl --help
 - `ensembl raw`: supports `GET` and `POST`, repeatable query parameters, raw JSON body input, body files, field-based JSON construction, extra headers, compact output, base URL overrides, and timeout control.
 
 ## Quick Start
+$$\color{#0EA5E9}Quick \space \color{#14B8A6}Start$$
 
 ```bash
 ensembl explain
@@ -71,21 +66,15 @@ ensembl raw /info/ping
 ```
 
 ## Metadata Refresh
+$$\color{#0EA5E9}Metadata \space \color{#14B8A6}Refresh$$
 
 ```bash
 ./scripts/prefetch_docs.sh .cache/ensembl-docs
 uv run python scripts/update_metadata.py --source-dir .cache/ensembl-docs
 ```
 
-## Development
-
-```bash
-uv run ruff check src tests
-uv run mypy
-uv run pytest
-```
-
 ## Credits
+$$\color{#0EA5E9}Project \space \color{#14B8A6}Credits$$
 
 This client is built for the Ensembl REST API and is not affiliated with Ensembl.
 
