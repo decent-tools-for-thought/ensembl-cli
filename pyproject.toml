@@ -7,12 +7,20 @@ name = "ensembl-cli"
 version = "0.1.3"
 description = "Self-documenting CLI for the Ensembl REST API"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 license = "MIT"
 authors = [
   {name = "Codex"}
 ]
 dependencies = []
+
+[dependency-groups]
+dev = [
+  "build>=1.2.2",
+  "mypy>=1.18.2",
+  "pytest>=8.4.2",
+  "ruff>=0.13.2",
+]
 
 [project.scripts]
 ensemble = "ensembl_cli.cli:main"
@@ -32,13 +40,13 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I"]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.13"
 files = ["src/ensembl_cli"]
 warn_unused_configs = true
 check_untyped_defs = true
