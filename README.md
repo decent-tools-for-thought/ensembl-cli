@@ -17,7 +17,6 @@ Self-documenting command-line client for inspecting and calling the bundled Ense
 - [Install](#install)
 - [Functionality](#functionality)
 - [Quick Start](#quick-start)
-- [Metadata Refresh](#metadata-refresh)
 - [Credits](#credits)
 
 ## Install
@@ -63,7 +62,7 @@ ensembl api call lookup_post --field 'ids=["ENSG00000157764","ENSG00000248378"]'
 ensembl raw /info/ping                                                              # call an arbitrary path
 ```
 
-## Metadata Refresh
+### Metadata Refresh
 $$\color{#0EA5E9}Refresh \space \color{#14B8A6}Metadata$$
 
 ```bash
