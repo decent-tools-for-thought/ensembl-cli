@@ -1,4 +1,4 @@
-name: Release Drift
+name: Package Drift
 
 on:
   schedule:
@@ -6,17 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  rebuild-and-verify:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-
-      - name: Run unit tests
-        run: PYTHONPATH=src python -m unittest discover -s tests -v
-
-      - name: Build and verify wheel and sdist
-        run: bash scripts/verify_python_dist.sh
+  package-drift:
+    uses: decent-tools-for-thought/.github/.github/workflows/python-package-drift.yml@main
+    with:
+      package_import_name: ensembl_cli
+      cli_command: ensemble
+      run_tests: false
